@@ -174,7 +174,7 @@ long long erosion(PGM *pgm, PGM *pgm1, int i, int j, kernel *ker)
 
 long long operation(PGM *pgm, PGM *pgm1, kernel *ker, int s)
 {
-  long long count = 0;
+  long long count1 = 0, count2 = 0;
   int i, j;
   if (s)
   { // Closing
@@ -184,7 +184,7 @@ long long operation(PGM *pgm, PGM *pgm1, kernel *ker, int s)
       {
         if (pgm->data[i][j] == (char)B_VAL)
         {
-          count += dilation(pgm, pgm1, i, j, ker);
+          count1 = dilation(pgm, pgm1, i, j, ker);
         }
       }
     }
@@ -195,11 +195,11 @@ long long operation(PGM *pgm, PGM *pgm1, kernel *ker, int s)
       {
         if (pgm->data[i][j] == (char)B_VAL)
         {
-          count += erosion(pgm, pgm1, i, j, ker);
+          count2 = erosion(pgm, pgm1, i, j, ker);
         }
       }
     }
-    return count;
+    return count1 + count2;
   }
   else
   { // Opening
@@ -209,7 +209,7 @@ long long operation(PGM *pgm, PGM *pgm1, kernel *ker, int s)
       {
         if (pgm->data[i][j] == (char)B_VAL)
         {
-          count += erosion(pgm, pgm1, i, j, ker);
+          count1 = erosion(pgm, pgm1, i, j, ker);
         }
       }
     }
@@ -220,11 +220,11 @@ long long operation(PGM *pgm, PGM *pgm1, kernel *ker, int s)
       {
         if (pgm->data[i][j] == (char)B_VAL)
         {
-          count += dilation(pgm, pgm1, i, j, ker);
+          count2 = dilation(pgm, pgm1, i, j, ker);
         }
       }
     }
-    return count;
+    return count1 + count2;
   }
 }
 
