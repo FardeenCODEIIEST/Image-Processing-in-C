@@ -4,7 +4,6 @@
 #include <string.h>
 
 #define B_VAL 255
-#define HEADER_WIDTH 3
 
 typedef struct PGM
 {
@@ -70,21 +69,6 @@ int openPGM(PGM *pgm, char filename[])
     return 1;
 }
 
-void copyPGM(PGM *pdest, PGM *psrc)
-{
-    strcpy(pdest->type, psrc->type);
-    pdest->width = psrc->width;
-    pdest->height = psrc->height;
-    pdest->grayvalue = psrc->grayvalue;
-    for (int i = 0; i < pdest->height; i++)
-    {
-        for (int j = 0; j < pdest->width; j++)
-        {
-            pdest->data[i][j] = psrc->data[i][j];
-        }
-    }
-}
-
 void printImageDetails(PGM *pgm, char filename[])
 {
     FILE *pgmfile = fopen(filename, "rb");
@@ -113,33 +97,6 @@ void saveImage(PGM *pgm, char fname[])
         }
     }
     fclose(fp);
-}
-
-void init_ker(kernel *ker, int size)
-{
-    ker->size = size;
-    ker->info = malloc(size * sizeof(int *));
-    for (int i = 0; i < size; i++)
-    {
-        ker->info[i] = malloc(sizeof(int));
-    }
-    for (int i = 0; i < size; i++)
-    {
-        ker->info[i][0] = 1;
-    }
-}
-
-void erosion1(PGM *pgm, PGM *pgm1, int i, int j, kernel *ker)
-{
-    int a = ker->size;
-    for (int l = 0; l < a; l++)
-    {
-        if (pgm->data[i][j + l - a / 2] == (char)B_VAL)
-        {
-            pgm1->data[i][j] = (char)B_VAL;
-            break;
-        }
-    }
 }
 
 void binaryPaint(PGM *pgm)
@@ -239,54 +196,6 @@ int spacing(PGM *pgm, int let_len)
     return c - a;
 }
 
-int stroke(PGM *pgm)
-{
-    int a = header(pgm);
-    int c = letter_height(pgm);
-    int b = spacing(pgm, c);
-    int m, k = 0;
-    int *arr = malloc(sizeof(int) * 250);
-    for (int i = a + 2; i < pgm->height - 1; i = i + b)
-    {
-        for (int j = 0; j < pgm->width - 1; j++)
-        {
-            if (pgm->data[i][j] == (char)B_VAL && pgm->data[i][j + 1] == (char)0)
-            {
-                m = 1;
-                while (pgm->data[i][j + m] != (char)B_VAL)
-                {
-                    m++;
-                }
-                arr[k++] = m;
-            }
-        }
-    }
-    qsort(arr, k, sizeof(int), cmp);
-    int d = arr[k - 1];
-    free(arr);
-    return d;
-}
-
-void oper(PGM *pgm, PGM *pgm1, kernel *ker)
-{
-    int a = header(pgm);
-    int c = letter_height(pgm);
-    int b = spacing(pgm, c);
-    int k;
-    for (int i = a; i < pgm->height; i = i + b)
-    {
-        for (int j = 0; j < pgm->width; j++)
-        {
-            k = 0;
-            while (k <= HEADER_WIDTH)
-            {
-                erosion1(pgm, pgm1, i + k, j, ker);
-                k++;
-            }
-        }
-    }
-}
-
 int uright(PGM *pgm, int i, int j, int a)
 {
     if (pgm->data[i][j] == (char)B_VAL || i <= a)
@@ -317,7 +226,11 @@ int dright(PGM *pgm, int i, int j, int a)
 
 int max(int a, int b)
 {
-    return (a > b) ? a : b;
+    if (a > b)
+    {
+        return a;
+    }
+    return b;
 }
 
 int right(PGM *pgm, int i, int j, int a)
@@ -350,7 +263,7 @@ void oper1(PGM *pgm)
     {
         for (int j = 0; j < pgm->width; j++)
         {
-            z = right(pgm, i + b / 2 - 1, j, i + 2);
+            z = right(pgm, i + b / 2 + 2, j, i + 2);
             if (z > j + 1)
             {
                 k = 0;
@@ -394,7 +307,6 @@ int main()
         binaryPaint(pgm);
         oper1(pgm);
         saveImage(pgm, "Result.pgm");
-        printf("Image has been saved successfully\n");
         free(pgm->data);
         free(pgm);
     }
