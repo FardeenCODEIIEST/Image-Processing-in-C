@@ -129,7 +129,7 @@ void init_ker(kernel *ker, int size)
   }
 }
 
-void erosion1(PGM *pgm, PGM *pgm1, int i, int j, kernel *ker)
+void open(PGM *pgm, PGM *pgm1, int i, int j, kernel *ker)
 {
   int a = ker->size;
   for (int l = 0; l < a; l++)
@@ -241,8 +241,8 @@ int spacing(PGM *pgm)
 
 int stroke(PGM *pgm)
 {
-  int a = header(pgm);
-  int b = spacing(pgm);
+  int a = header(pgm);  // Vertical-Position of the top-line in the image
+  int b = spacing(pgm); // Average Spacing between each line
   int m, k = 0;
   int *arr = malloc(sizeof(int) * 250);
   for (int i = a + 2; i < pgm->height - 1; i = i + b)
@@ -276,9 +276,9 @@ void oper(PGM *pgm, PGM *pgm1, kernel *ker)
     for (int j = 0; j < pgm->width; j++)
     {
       k = 0;
-      while (k <= HEADER_WIDTH)
+      while (k <= HEADER_WIDTH) // HEADER_WIDTH=2
       {
-        erosion1(pgm, pgm1, i + k, j, ker);
+        open(pgm, pgm1, i + k, j, ker);
         k++;
       }
     }

@@ -1,0 +1,31 @@
+Vertical scan Algorithm
+-----------------------------------------
+for each row
+  for each column
+    pointer=1
+    move upward from unvisited base-line pixel
+    if(pixel is white)
+
+      then mark that pixel visited
+      pointer=pointer+1
+    
+    else look at Right pixel
+    
+    if(Right Pixel is White)
+
+      then move right and goto Step 6
+    
+    else if (pointer>=MedianHeight)
+      
+      pseudo-pointer=pointer
+      offset=[1,2,3]
+      if(pixel at (pseudo-pointer+ number in offset) is White)
+
+        then do not make cut; goto baseline and continue Step 6
+
+      else
+      
+       then make a vertical blank region(Segmentation)
+end
+
+
