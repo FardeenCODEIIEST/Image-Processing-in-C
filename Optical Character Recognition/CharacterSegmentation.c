@@ -263,7 +263,7 @@ void oper1(PGM *pgm)
     {
         for (int j = 0; j < pgm->width; j++)
         {
-            z = right(pgm, i + b / 2 + 2, j, i + 2);
+            z = right(pgm, i + b / 4 + 3, j, i + 2);
             if (z > j + 1)
             {
                 k = 0;
@@ -287,7 +287,7 @@ void oper1(PGM *pgm)
                 }
                 if (k == 0)
                 {
-                    blank(pgm, i, z);
+                    blank(pgm, i, z + 1);
                 }
             }
             j = z;
